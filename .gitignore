@@ -1,0 +1,4 @@
+test.db
+__pycache__/
+gym_venv/
+.vscode/
