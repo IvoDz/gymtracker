@@ -1,7 +1,9 @@
-from .constants import EXERCISES
+from .constants import EXERCISES, DATABASE_URL
 from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType
 from sqlalchemy.orm import Session
 from datetime import date
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 #TODO: Implement error handling, exceptions
 ## ---------------------------------------------------- CORE OPERATIONS ---------------------------------------------------- ##
@@ -11,22 +13,32 @@ def create_workout_set(db: Session, workout_id: int, set_id: int):
     db.add(workout_set)
     db.commit()
     db.refresh(workout_set)
+    
+    db.close()
     return True
 
 
-def add_set(db: Session, exercise_id: int, weight: int, repetitions: int):
+def add_new_set(exercise_name: str, weight: int, repetitions: int):
     """Add a set to a workout, initializing a new workout if needed."""
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    
     today_workout = get_workout_by_date(db, date.today())
 
     if not today_workout:
         today_workout = initialize_workout(db, date.today())
 
+    exercise_id = db.query(Exercise).filter(Exercise.name == exercise_name).first().id
+
     set = Set(exercise_id=exercise_id, weight=weight, repetitions=repetitions, date=date.today())
     db.add(set)
     db.commit()
     db.refresh(set)
-    
+
     create_workout_set(db, today_workout.id, set.id)
+    
+    db.close()
     return True
 
 def get_workout_sets(db: Session, workout_id: int):
@@ -69,3 +81,11 @@ def preload_exercise_names(db: Session):
         db.commit()
     finally:
         db.close()
+        
+def get_exercise_names():
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    exercises = db.query(Exercise).all()
+    db.close()
+    return [exercise.name for exercise in exercises]

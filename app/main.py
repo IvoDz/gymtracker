@@ -12,8 +12,8 @@ if __name__=="__main__":
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-    Base.metadata.create_all(bind=engine)
-    preload_exercise_names(SessionLocal())
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    #preload_exercise_names(SessionLocal())
     
     app = FastAPI()
     app.include_router(router, prefix="")
