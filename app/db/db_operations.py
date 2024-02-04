@@ -61,9 +61,14 @@ def initialize_workout(db: Session, workout_date: date):
     db.refresh(workout)
     return workout
 
-def get_all_past_workouts(db: Session):
+def get_all_past_workouts():
     """Retrieve all past workouts."""
-    return db.query(Workout).all()
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    workouts = db.query(Workout).all()
+    
+    return [(workout.date, workout.type) for workout in workouts]
 
 def get_all_exercise_history():
     # TODO

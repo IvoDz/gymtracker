@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Your Workouts</title>
+</head>
+
+<body class="bg-gray-200 flex flex-col items-center justify-center h-screen">
+    <h2 class="text-4xl font-bold mb-8">Your Workout History</h2>
+
+    <ul class="md:w-2/3 lg:w-1/2">
+        {% for workout in workouts %}
+            <li class="mb-4">
+                <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <p class="text-lg font-semibold mb-2">Date {{ workout[0] }}, Type: {{ workout[1] }}</p>
+                    <a href="#"> <!-- TODO implement workout/<id>-->
+                        <button class="mt-2 p-2 bg-black text-white rounded-md hover:bg-gray-800">Details</button>
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, Form
 from db.db_operations import *
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 router = APIRouter()
 templates = Jinja2Templates(directory="api/templates")
@@ -18,4 +18,12 @@ def add_set(request: Request):
 @router.post("/submit_set")
 def submit_form(exercise: str = Form(...), weight: int = Form(...), reps: int = Form(...)):
     add_new_set(exercise, weight, reps)
-    return {"Status": "Set Added Successfully!"}
+    return RedirectResponse(url="/redirect")
+
+@router.get("/past_workouts")
+def workout_history(request: Request):
+    workouts = get_all_past_workouts()
+    return templates.TemplateResponse("past_workouts.html", {"request": request, "workouts": workouts})
+
+
+# TODO workout/<id> 
