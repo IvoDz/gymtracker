@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout {{ date }}</title>
+</head>
+<body>
+    <ul class="md:w-2/3 lg:w-1/2">
+        {% for set in workout_sets %}
+            <li class="mb-4">
+                <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <p class="text-lg font-semibold mb-2">Set ID {{ workout_sets.set_id }}</p>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -18,12 +18,18 @@ def add_set(request: Request):
 @router.post("/submit_set")
 def submit_form(exercise: str = Form(...), weight: int = Form(...), reps: int = Form(...)):
     add_new_set(exercise, weight, reps)
-    return RedirectResponse(url="/redirect")
+    response = RedirectResponse(url="/")
+    response.status_code = 302
+    return response
 
 @router.get("/past_workouts")
 def workout_history(request: Request):
     workouts = get_all_past_workouts()
     return templates.TemplateResponse("past_workouts.html", {"request": request, "workouts": workouts})
 
+@router.get("/workout/{workout_id}")
+def workout_details(request: Request, workout_id: int):
+    date = get_workout_date_by_id(workout_id)
+    workout_sets = get_workout_sets(workout_id)
+    return templates.TemplateResponse("workout_details.html", {"request": request, "date": date, "workout_sets": workout_sets})
 
-# TODO workout/<id> 

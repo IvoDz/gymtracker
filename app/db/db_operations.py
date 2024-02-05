@@ -41,17 +41,28 @@ def add_new_set(exercise_name: str, weight: int, repetitions: int):
     db.close()
     return True
 
-def get_workout_sets(db: Session, workout_id: int):
+def get_workout_sets(workout_id: int):
     """Retrieve sets recorded in a specific workout."""
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    
     return (
         db.query(WorkoutSet)
         .filter(WorkoutSet.workout_id == workout_id)
         .all()
     )
     
-def get_workout_by_date(db: Session, workout_date: date):
+def get_workout_date_by_id(id: int):
     """Retrieve a workout for a specific date."""
-    return db.query(Workout).filter(Workout.date == workout_date).first()
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    return db.query(Workout).filter(Workout.id == id).first().date
+
+def get_workout_date_by_date(db ,date: date):
+    """Retrieve a workout for a specific date."""
+    return db.query(Workout).filter(Workout.date == date).first()
 
 def initialize_workout(db: Session, workout_date: date):
     """Initialize a new workout for a specific date."""
@@ -68,7 +79,7 @@ def get_all_past_workouts():
     db = SessionLocal()
     workouts = db.query(Workout).all()
     
-    return [(workout.date, workout.type) for workout in workouts]
+    return workouts
 
 def get_all_exercise_history():
     # TODO
