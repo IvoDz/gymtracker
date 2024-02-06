@@ -1,12 +1,12 @@
+import uvicorn
 from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db.models import Base
+
+from api.endpoints import router
 from db.constants import DATABASE_URL
 from db.db_operations import *
-from fastapi import FastAPI
-from api.endpoints import router
-import uvicorn
+from db.models import Base
 
 if __name__=="__main__":
     engine = create_engine(DATABASE_URL)

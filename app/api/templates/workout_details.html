@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout {{ date }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Workout {{ date.strftime('%d.%m.%Y') }}</title>
 </head>
-<body>
+<body class="bg-gray-200 flex flex-col items-center justify-center h-screen">
+    <h1 class="text-4xl font-bold mb-8">{{ date.strftime('%d.%m.%Y') }}</h1>
     <ul class="md:w-2/3 lg:w-1/2">
-        {% for set in workout_sets %}
+        {% for exercise, set in sets %}
             <li class="mb-4">
                 <div class="p-6 bg-white rounded-lg shadow-lg">
-                    <p class="text-lg font-semibold mb-2">Set ID {{ workout_sets.set_id }}</p>
+                    <p class="text-lg font-semibold mb-2"><strong>Exercise:</strong> {{ exercise.name }} ({{ exercise.type.value }})</p>
+                    <p class="text-lg font-semibold mb-2"><strong>Weight:</strong> {{ set.weight }}</p>
+                    <p class="text-lg font-semibold mb-2"><strong>Reps:</strong> {{ set.repetitions }}</p>
                 </div>
             </li>
         {% endfor %}

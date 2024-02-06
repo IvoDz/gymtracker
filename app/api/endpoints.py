@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Request, Depends, Form
-from db.db_operations import *
-from fastapi.templating import Jinja2Templates
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+
+from db.db_operations import *
 
 router = APIRouter()
 templates = Jinja2Templates(directory="api/templates")
@@ -31,5 +32,14 @@ def workout_history(request: Request):
 def workout_details(request: Request, workout_id: int):
     date = get_workout_date_by_id(workout_id)
     workout_sets = get_workout_sets(workout_id)
-    return templates.TemplateResponse("workout_details.html", {"request": request, "date": date, "workout_sets": workout_sets})
+    
+    sets = [get_set_by_id(set.id) for set in workout_sets]
+    exercises = [get_exercise_by_id(set.exercise_id) for set in sets]
+    
+    sets = list(zip(exercises, sets))
+    
+    print(sets)
+    
+    return templates.TemplateResponse("workout_details.html", {"request": request, "date": date, "sets": sets})
 
+#TODO: exercise/{id}/progress,  /exercises

@@ -1,9 +1,11 @@
-from .constants import EXERCISES, DATABASE_URL
-from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType
-from sqlalchemy.orm import Session
 from datetime import date
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
+
+from .constants import DATABASE_URL, EXERCISES
+from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType
+
 
 #TODO: Implement error handling, exceptions
 ## ---------------------------------------------------- CORE OPERATIONS ---------------------------------------------------- ##
@@ -60,13 +62,13 @@ def get_workout_date_by_id(id: int):
     db = SessionLocal()
     return db.query(Workout).filter(Workout.id == id).first().date
 
-def get_workout_date_by_date(db ,date: date):
+def get_workout_by_date(db ,date: date):
     """Retrieve a workout for a specific date."""
     return db.query(Workout).filter(Workout.date == date).first()
 
 def initialize_workout(db: Session, workout_date: date):
     """Initialize a new workout for a specific date."""
-    workout = Workout(date=workout_date, type=WorkoutType.PUSH) #TODO: Implement logic to determine workout type
+    workout = Workout(date=workout_date, type=WorkoutType.PUSH.value) #TODO: Implement logic to determine workout type
     db.add(workout)
     db.commit()
     db.refresh(workout)
@@ -81,10 +83,6 @@ def get_all_past_workouts():
     
     return workouts
 
-def get_all_exercise_history():
-    # TODO
-    ...
-    
 def get_progress_for_exercise():
     # TODO
     ...
@@ -105,3 +103,18 @@ def get_exercise_names():
     exercises = db.query(Exercise).all()
     db.close()
     return [exercise.name for exercise in exercises]
+
+
+def get_set_by_id(id: int):
+    """Retrieve a set data for a specific ID."""
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    return db.query(Set).filter(Set.id == id).first()
+
+
+def get_exercise_by_id(id: int):
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    return db.query(Exercise).filter(Exercise.id == id).first()

@@ -15,9 +15,12 @@
         {% for workout in workouts %}
             <li class="mb-4">
                 <div class="p-6 bg-white rounded-lg shadow-lg">
-                    <p class="text-lg font-semibold mb-2">Date {{ workout.date }}, Type: {{ workout.type }}</p>
+                    <p class="text-lg font-semibold mb-2">Date {{ workout.date.strftime('%d.%m.%Y') }}, Type: {{ workout.type }}</p>
                     <a href="/workout/{{ workout.id }}">
                         <button class="mt-2 p-2 bg-black text-white rounded-md hover:bg-gray-800">Details</button>
+                    </a>
+                    <a href="/workout/delete/{{ workout.id }}">
+                        <button class="mt-2 p-2 bg-red-300 text-white rounded-md hover:bg-red-500">Delete</button>
                     </a>
                 </div>
             </li>
