@@ -13,8 +13,10 @@ def get_endpoint(request: Request):
 
 @router.get("/add_set", response_class=HTMLResponse)
 def add_set(request: Request):
-    exercises = get_exercise_names()
-    return templates.TemplateResponse("add_set.html", {"request": request, "exercises": exercises})
+    exercises = get_exercises()
+    exercise_names = [exercise.name for exercise in exercises]
+    
+    return templates.TemplateResponse("add_set.html", {"request": request, "exercises": exercise_names})
 
 @router.post("/submit_set")
 def submit_form(exercise: str = Form(...), weight: int = Form(...), reps: int = Form(...)):
@@ -42,4 +44,12 @@ def workout_details(request: Request, workout_id: int):
     
     return templates.TemplateResponse("workout_details.html", {"request": request, "date": date, "sets": sets})
 
-#TODO: exercise/{id}/progress,  /exercises
+@router.get("/exercises")
+def all_exercises(request: Request):
+    exercises = get_exercises()
+    return templates.TemplateResponse("exercises.html", {"request": request, "exercises": exercises})
+
+
+@router.get("/exercise/{id}/progress")
+def exercise_progress(request: Request, id: int):
+    return templates.TemplateResponse("exercise_progress.html", {"request": request, "id": id})

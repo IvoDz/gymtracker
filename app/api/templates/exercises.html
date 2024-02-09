@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Your Workouts</title>
+</head>
+
+<body class="bg-gray-200 flex flex-col items-center justify-center h-screen">
+    <h2 class="text-4xl font-bold mb-8 mt-4">Track your progress!</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full md:w-2/3 lg:w-1/2">
+        {% for exercise in exercises %}
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="p-4">
+                    <p class="text-lg font-semibold mb-2">{{ exercise.name }}</p>
+                    <a href="/workout/{{ exercise.id }}/progress">
+                        <button class="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">Details</button>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

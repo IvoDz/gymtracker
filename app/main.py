@@ -13,7 +13,7 @@ if __name__=="__main__":
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     Base.metadata.create_all(bind=engine, checkfirst=True)
-    #preload_exercise_names(SessionLocal())
+    preload_exercise_names(SessionLocal())
     
     app = FastAPI()
     app.include_router(router, prefix="")

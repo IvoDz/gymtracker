@@ -68,7 +68,7 @@ def get_workout_by_date(db ,date: date):
 
 def initialize_workout(db: Session, workout_date: date):
     """Initialize a new workout for a specific date."""
-    workout = Workout(date=workout_date, type=WorkoutType.PUSH.value) #TODO: Implement logic to determine workout type
+    workout = Workout(date=workout_date, type=WorkoutType.LEGS) 
     db.add(workout)
     db.commit()
     db.refresh(workout)
@@ -96,14 +96,13 @@ def preload_exercise_names(db: Session):
     finally:
         db.close()
         
-def get_exercise_names():
+def get_exercises():
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     exercises = db.query(Exercise).all()
     db.close()
-    return [exercise.name for exercise in exercises]
-
+    return [exercise for exercise in exercises]
 
 def get_set_by_id(id: int):
     """Retrieve a set data for a specific ID."""
@@ -112,9 +111,9 @@ def get_set_by_id(id: int):
     db = SessionLocal()
     return db.query(Set).filter(Set.id == id).first()
 
-
 def get_exercise_by_id(id: int):
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     return db.query(Exercise).filter(Exercise.id == id).first()
+

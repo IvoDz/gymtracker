@@ -18,7 +18,7 @@ class WorkoutType(PythonEnum):
     PUSH = "push"
     PULL = "pull"
     
-    
+print(WorkoutType.LEGS)
 class Exercise(Base):
     __tablename__ = "exercises"
 
