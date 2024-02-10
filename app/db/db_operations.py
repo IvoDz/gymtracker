@@ -1,14 +1,12 @@
 from datetime import date
+from random import randint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from .constants import DATABASE_URL, EXERCISES
-from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType
+from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType, ExerciseType
 
-
-#TODO: Implement error handling, exceptions
-## ---------------------------------------------------- CORE OPERATIONS ---------------------------------------------------- ##
 def create_workout_set(db: Session, workout_id: int, set_id: int):
     """Create a relationship between a workout and a set."""
     workout_set = WorkoutSet(workout_id=workout_id, set_id=set_id)
@@ -27,9 +25,12 @@ def add_new_set(exercise_name: str, weight: int, repetitions: int):
     db = SessionLocal()
     
     today_workout = get_workout_by_date(db, date.today())
-
-    if not today_workout:
-        today_workout = initialize_workout(db, date.today())
+    exercise_id = db.query(Exercise).filter(Exercise.name == exercise_name).first().id
+    exercise_type = get_exercise_by_id(exercise_id).type
+    workout_type = get_workout_type(exercise_type)
+    
+    if not today_workout:    
+        today_workout = initialize_workout(db, date.today(), workout_type)
 
     exercise_id = db.query(Exercise).filter(Exercise.name == exercise_name).first().id
 
@@ -66,9 +67,16 @@ def get_workout_by_date(db ,date: date):
     """Retrieve a workout for a specific date."""
     return db.query(Workout).filter(Workout.date == date).first()
 
-def initialize_workout(db: Session, workout_date: date):
+def get_workout_by_id(id: int):
+    """Retrieve a workout for a specific ID."""
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    return db.query(Workout).filter(Workout.id == id).first()
+
+def initialize_workout(db: Session, workout_date: date ,type: WorkoutType):
     """Initialize a new workout for a specific date."""
-    workout = Workout(date=workout_date, type=WorkoutType.LEGS) 
+    workout = Workout(date=workout_date, type=type) 
     db.add(workout)
     db.commit()
     db.refresh(workout)
@@ -83,9 +91,7 @@ def get_all_past_workouts():
     
     return workouts
 
-def get_progress_for_exercise():
-    # TODO
-    ...
+
 
 def preload_exercise_names(db: Session):
     try:
@@ -117,3 +123,51 @@ def get_exercise_by_id(id: int):
     db = SessionLocal()
     return db.query(Exercise).filter(Exercise.id == id).first()
 
+def get_workout_type(exercise_type: ExerciseType):
+    """Retrieve a workout type for a specific exercise type."""
+    if exercise_type in [ExerciseType.CHEST, ExerciseType.SHOULDERS, ExerciseType.TRICEPS]:
+        return WorkoutType.PUSH
+    elif exercise_type in [ExerciseType.BICEPS, ExerciseType.BACK]:
+        return WorkoutType.PULL
+    elif exercise_type == ExerciseType.LEGS:
+        return WorkoutType.LEGS
+    else:
+        return None
+    
+    
+def delete_workout(workout_id):
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = SessionLocal()
+    workout = session.query(Workout).filter_by(id=workout_id).first()
+    if workout:
+        workout_sets = session.query(WorkoutSet).filter_by(workout_id=workout_id).all()
+        for workout_set in workout_sets:
+            session.delete(workout_set)
+        
+        sets = session.query(Set).join(WorkoutSet).filter(WorkoutSet.workout_id == workout_id).all()
+        for s in sets:
+            session.delete(s)
+        
+        session.delete(workout)
+        session.commit()
+        return True
+    return False
+
+
+def get_progress_for_exercise(exercise_id: int):
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    
+    sets = db.query(Set).join(Exercise).filter(Exercise.id == exercise_id).all()
+    pairs = [(s.repetitions, s.weight) for s in sets]
+    db.close()
+    return pairs
+
+def check_exercises(db):
+    exercises = db.query(Exercise).all()
+    if not exercises:
+        preload_exercise_names(db)
+    db.close()
+    return True

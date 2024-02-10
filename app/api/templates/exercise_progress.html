@@ -3,9 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Exercise Progress</title>
+    <!-- Include Plotly via CDN -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    Graph here
+    <!-- Div to hold the line chart -->
+    <div id="line-chart"></div>
+
+    <!-- Toggle button to switch between weight and total value -->
+    <div>
+        <input type="radio" id="weight" name="plot-type" value="weight" checked>
+        <label for="weight">Plot by Weight</label>
+        <input type="radio" id="total-value" name="plot-type" value="total-value">
+        <label for="total-value">Plot by Total Value</label>
+    </div>
+
+    <!-- Script to create the line chart -->
+    <script>
+        // Define the data passed from the server
+        var data = {{ data | tojson | safe }};
+        
+        // Function to create data for weight and total value plots
+        function createData() {
+            var weightData = [];
+            var totalValueData = [];
+            for (var i = 0; i < data.length; i++) {
+                weightData.push(data[i][1]);
+                totalValueData.push(data[i][0] * data[i][1]);
+            }
+            return { weightData: weightData, totalValueData: totalValueData };
+        }
+
+        // Define layout for the chart
+        var layout = {
+            title: 'Exercise Progress',
+            yaxis: {
+                title: 'Y Axis'
+            }
+        };
+
+        // Function to update the chart based on the selected plot type
+        function updateChart() {
+            var plotType = document.querySelector('input[name="plot-type"]:checked').value;
+            var trace;
+            if (plotType === 'weight') {
+                var weightData = createData().weightData;
+                trace = {
+                    y: weightData,
+                    mode: 'lines',
+                    name: 'Weight'
+                };
+            } else {
+                var totalValueData = createData().totalValueData;
+                trace = {
+                    y: totalValueData,
+                    mode: 'lines',
+                    name: 'Total Value'
+                };
+            }
+            // Plot the chart
+            Plotly.newPlot('line-chart', [trace], layout);
+        }
+
+        // Initial plot
+        updateChart();
+
+        // Add event listener to toggle button
+        var toggleButtons = document.querySelectorAll('input[name="plot-type"]');
+        toggleButtons.forEach(button => {
+            button.addEventListener('change', updateChart);
+        });
+    </script>
 </body>
 </html>

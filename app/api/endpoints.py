@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+
 
 from db.db_operations import *
 
@@ -52,4 +53,13 @@ def all_exercises(request: Request):
 
 @router.get("/exercise/{id}/progress")
 def exercise_progress(request: Request, id: int):
-    return templates.TemplateResponse("exercise_progress.html", {"request": request, "id": id})
+    data = get_progress_for_exercise(id)
+    return templates.TemplateResponse("exercise_progress.html", {"request": request, "data": data})
+
+
+@router.post("/workouts/delete/{workout_id}")
+def delete_workout_(workout_id: int):
+    delete_workout(workout_id)
+    response = RedirectResponse(url="/past_workouts")
+    response.status_code = 302
+    return response

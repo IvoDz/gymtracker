@@ -19,9 +19,10 @@
                     <a href="/workout/{{ workout.id }}">
                         <button class="mt-2 p-2 bg-black text-white rounded-md hover:bg-gray-800">Details</button>
                     </a>
-                    <a href="/workout/delete/{{ workout.id }}">
-                        <button class="mt-2 p-2 bg-red-300 text-white rounded-md hover:bg-red-500">Delete</button>
-                    </a>
+                    <form action="/workouts/delete/{{ workout.id }}" method="post">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="mt-2 p-2 bg-red-300 text-white rounded-md hover:bg-red-500">Delete</button>
+                    </form>
                 </div>
             </li>
         {% endfor %}
