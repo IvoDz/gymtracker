@@ -54,6 +54,7 @@ def all_exercises(request: Request):
 @router.get("/exercise/{id}/progress")
 def exercise_progress(request: Request, id: int):
     data = get_progress_for_exercise(id)
+    print(data) # TODO fix date not JSON serializable
     return templates.TemplateResponse("exercise_progress.html", {"request": request, "data": data})
 
 

@@ -28,18 +28,20 @@
         function createData() {
             var weightData = [];
             var totalValueData = [];
+            var dates = [];
             for (var i = 0; i < data.length; i++) {
                 weightData.push(data[i][1]);
                 totalValueData.push(data[i][0] * data[i][1]);
+                dates.push(data[i][2])
             }
-            return { weightData: weightData, totalValueData: totalValueData };
+            return { weightData: weightData, totalValueData: totalValueData , dates: dates};
         }
 
         // Define layout for the chart
         var layout = {
             title: 'Exercise Progress',
             yaxis: {
-                title: 'Y Axis'
+                title: 'kg'
             }
         };
 
@@ -51,6 +53,7 @@
                 var weightData = createData().weightData;
                 trace = {
                     y: weightData,
+                    x: dates,
                     mode: 'lines',
                     name: 'Weight'
                 };
@@ -58,6 +61,7 @@
                 var totalValueData = createData().totalValueData;
                 trace = {
                     y: totalValueData,
+                    x: dates,
                     mode: 'lines',
                     name: 'Total Value'
                 };

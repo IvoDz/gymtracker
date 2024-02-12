@@ -1,5 +1,4 @@
 from datetime import date
-from random import randint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -135,6 +134,16 @@ def get_workout_type(exercise_type: ExerciseType):
         return None
     
     
+def get_workout_date_by_set_id(set_id: int):
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    
+    workout_id = db.query(WorkoutSet).filter(WorkoutSet.set_id == set_id).first().workout_id
+    workout_date =  get_workout_date_by_id(workout_id)
+
+    return workout_date
+
 def delete_workout(workout_id):
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -161,7 +170,8 @@ def get_progress_for_exercise(exercise_id: int):
     db = SessionLocal()
     
     sets = db.query(Set).join(Exercise).filter(Exercise.id == exercise_id).all()
-    pairs = [(s.repetitions, s.weight) for s in sets]
+    
+    pairs = [(s.repetitions, s.weight, get_workout_date_by_set_id(s.id)) for s in sets]
     db.close()
     return pairs
 
