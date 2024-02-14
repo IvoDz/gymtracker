@@ -14,8 +14,7 @@ if __name__=="__main__":
 
     Base.metadata.create_all(bind=engine, checkfirst=True)
     check_exercises(SessionLocal())
-    filler()
-    
+
     app = FastAPI()
     app.include_router(router, prefix="")
     uvicorn.run(app, host="127.0.0.1", port=8000)
