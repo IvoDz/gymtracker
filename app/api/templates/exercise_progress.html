@@ -26,15 +26,19 @@
         
         // Function to create data for weight and total value plots
         function createData() {
-            var weightData = [];
-            var totalValueData = [];
-            var dates = [];
+            var aggregatedData = {};
             for (var i = 0; i < data.length; i++) {
-                weightData.push(data[i][1]);
-                totalValueData.push(data[i][0] * data[i][1]);
-                dates.push(data[i][2])
+                var date = data[i][2];
+                if (!aggregatedData[date]) {
+                    aggregatedData[date] = { weight: 0, totalValue: 0 };
+                }
+                aggregatedData[date].weight += data[i][1];
+                aggregatedData[date].totalValue += data[i][0] * data[i][1];
             }
-            return { weightData: weightData, totalValueData: totalValueData , dates: dates};
+            var dates = Object.keys(aggregatedData);
+            var weightData = dates.map(date => aggregatedData[date].weight);
+            var totalValueData = dates.map(date => aggregatedData[date].totalValue);
+            return { dates: dates, weightData: weightData, totalValueData: totalValueData };
         }
 
         // Define layout for the chart
@@ -48,24 +52,18 @@
         // Function to update the chart based on the selected plot type
         function updateChart() {
             var plotType = document.querySelector('input[name="plot-type"]:checked').value;
-            var trace;
+            var plotData;
             if (plotType === 'weight') {
-                var weightData = createData().weightData;
-                trace = {
-                    y: weightData,
-                    x: dates,
-                    mode: 'lines',
-                    name: 'Weight'
-                };
+                plotData = createData().weightData;
             } else {
-                var totalValueData = createData().totalValueData;
-                trace = {
-                    y: totalValueData,
-                    x: dates,
-                    mode: 'lines',
-                    name: 'Total Value'
-                };
+                plotData = createData().totalValueData;
             }
+            var trace = {
+                y: plotData,
+                x: createData().dates,
+                mode: 'lines',
+                name: plotType === 'weight' ? 'Weight' : 'Total Value'
+            };
             // Plot the chart
             Plotly.newPlot('line-chart', [trace], layout);
         }

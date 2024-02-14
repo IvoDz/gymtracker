@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime, timedelta
+from random import randint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -171,7 +172,7 @@ def get_progress_for_exercise(exercise_id: int):
     
     sets = db.query(Set).join(Exercise).filter(Exercise.id == exercise_id).all()
     
-    pairs = [(s.repetitions, s.weight, get_workout_date_by_set_id(s.id)) for s in sets]
+    pairs = [(s.repetitions, s.weight, f'{get_workout_date_by_set_id(s.id):%d/%m/%Y}') for s in sets]
     db.close()
     return pairs
 

@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, Form, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-
-
 from db.db_operations import *
 
 router = APIRouter()
@@ -54,7 +52,10 @@ def all_exercises(request: Request):
 @router.get("/exercise/{id}/progress")
 def exercise_progress(request: Request, id: int):
     data = get_progress_for_exercise(id)
-    print(data) # TODO fix date not JSON serializable
+    formatted_data = [(d[0], d[1], datetime.strptime(d[2], '%d/%m/%Y')) for d in data]
+    sorted_data = sorted(formatted_data, key=lambda x: x[2])
+    data = [(d[0], d[1], d[2].strftime('%d/%m/%Y')) for d in sorted_data]
+    
     return templates.TemplateResponse("exercise_progress.html", {"request": request, "data": data})
 
 
