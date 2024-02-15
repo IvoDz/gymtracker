@@ -1,3 +1,5 @@
+"""Database models for the application."""	
+
 from enum import Enum as PythonEnum
 
 from sqlalchemy import Column, Date, Enum, ForeignKey, Integer, String

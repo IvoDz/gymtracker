@@ -8,7 +8,7 @@ from .constants import DATABASE_URL, EXERCISES
 from .models import Exercise, Set, Workout, WorkoutSet, WorkoutType, ExerciseType
 
 def create_workout_set(db: Session, workout_id: int, set_id: int):
-    """Create a relationship between a workout and a set."""
+    """Create and add a new WorkoutSet entry."""
     workout_set = WorkoutSet(workout_id=workout_id, set_id=set_id)
     db.add(workout_set)
     db.commit()
@@ -19,7 +19,7 @@ def create_workout_set(db: Session, workout_id: int, set_id: int):
 
 
 def add_new_set(exercise_name: str, weight: int, repetitions: int):
-    """Add a set to a workout, initializing a new workout if needed."""
+    """Add a set to a workout, initializing a new workout (fif needed."""
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -45,7 +45,7 @@ def add_new_set(exercise_name: str, weight: int, repetitions: int):
     return True
 
 def get_workout_sets(workout_id: int):
-    """Retrieve sets recorded in a specific workout."""
+    """Get all WorkoutSet entries."""
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -57,7 +57,7 @@ def get_workout_sets(workout_id: int):
     )
     
 def get_workout_date_by_id(id: int):
-    """Retrieve a workout for a specific date."""
+    """Retrieve a workout date for a specific ID."""
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -68,7 +68,7 @@ def get_workout_by_date(db ,date: date):
     return db.query(Workout).filter(Workout.date == date).first()
 
 def get_workout_by_id(id: int):
-    """Retrieve a workout for a specific ID."""
+    """Retrieve a workout data for a specific ID."""
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -91,9 +91,8 @@ def get_all_past_workouts():
     
     return workouts
 
-
-
 def preload_exercise_names(db: Session):
+    """Preload hardcoded exercise names and types into the database."""	
     try:
         for name, type in EXERCISES:
             exercise = Exercise(name=name, type=type)
@@ -103,6 +102,7 @@ def preload_exercise_names(db: Session):
         db.close()
         
 def get_exercises():
+    """Retrieve all exercise data."""
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -118,6 +118,7 @@ def get_set_by_id(id: int):
     return db.query(Set).filter(Set.id == id).first()
 
 def get_exercise_by_id(id: int):
+    """Retrieve an exercise data for a specific ID."""	
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -134,8 +135,8 @@ def get_workout_type(exercise_type: ExerciseType):
     else:
         return None
     
-    
 def get_workout_date_by_set_id(set_id: int):
+    """Retrieve a workout date for a specific set ID."""	
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -146,6 +147,7 @@ def get_workout_date_by_set_id(set_id: int):
     return workout_date
 
 def delete_workout(workout_id):
+    """Delete a workout and all related data."""	
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
@@ -166,6 +168,7 @@ def delete_workout(workout_id):
 
 
 def get_progress_for_exercise(exercise_id: int):
+    """Retrieve chronological progress (repetitions, weight) data of a particular exercise."""	
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
@@ -177,6 +180,7 @@ def get_progress_for_exercise(exercise_id: int):
     return pairs
 
 def check_exercises(db):
+    """Check if there are any exercises in the database. If not, preload them."""
     exercises = db.query(Exercise).all()
     if not exercises:
         preload_exercise_names(db)

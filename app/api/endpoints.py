@@ -52,6 +52,7 @@ def all_exercises(request: Request):
 @router.get("/exercise/{id}/progress")
 def exercise_progress(request: Request, id: int):
     data = get_progress_for_exercise(id)
+    ## Sort the data chronologically
     formatted_data = [(d[0], d[1], datetime.strptime(d[2], '%d/%m/%Y')) for d in data]
     sorted_data = sorted(formatted_data, key=lambda x: x[2])
     data = [(d[0], d[1], d[2].strftime('%d/%m/%Y')) for d in sorted_data]

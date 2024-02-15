@@ -1,3 +1,5 @@
+"""Constants are stored here."""
+
 from .models import ExerciseType
 
 DATABASE_URL = "sqlite:///test.db" 
